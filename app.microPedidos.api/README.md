@@ -312,7 +312,7 @@ El worker lo transforma a:
 ## Orden recomendado para levantar todo el entorno
 
 1. Iniciar MySQL en el puerto `3307`.
-2. Crear la base de datos `EcPedidos`.
+2. Crear la base de datos `MicroPedidos`.
 3. Iniciar RabbitMQ en los puertos `5672` y `15672`.
 4. Crear y activar `myenv`.
 5. Instalar `requirements.txt`.
@@ -386,7 +386,7 @@ Compruebe:
 
 - Que MySQL esté iniciado.
 - Que esté escuchando en el puerto `3307`.
-- Que exista la base `EcPedidos`.
+- Que exista la base `MicroPedidos`.
 - Que usuario y contraseña coincidan con `DATABASE_URL`.
 
 ### No se puede conectar a RabbitMQ

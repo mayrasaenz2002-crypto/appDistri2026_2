@@ -16,7 +16,7 @@ class Pedido(Base):
     __tablename__ = "pedidos"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    direccion_cliente_id = Column(Integer, ForeignKey("direcciones_clientes.id"))
+    cliente_direccion_id = Column(Integer, ForeignKey("cliente_direcciones.id"))
     fecha_pedido = Column(DateTime)
     total = Column(Numeric(10, 2))
 

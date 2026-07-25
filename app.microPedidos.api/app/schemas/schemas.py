@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class PedidoCreate(BaseModel):
-    direccion_cliente_id: int
+    cliente_direccion_id: int
     fecha_pedido: datetime
     total: float
 

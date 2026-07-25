@@ -12,7 +12,7 @@ from app.services.jwt_manager import create_token
 
 
 app = FastAPI()
-app.title = "Api service ECPedidos"
+app.title = "Api service MicroPedidos"
 app.version = "0.0.1"
 
 # Code First
@@ -31,7 +31,7 @@ def login(user: Usuario):
 
 @app.get("/")
 def root():
-    return {"message": "API EcPedidos funcionando"}
+    return {"message": "API MicroPedidos funcionando"}
 
 
 @app.get('/', tags=['test'])

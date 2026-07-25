@@ -1,4 +1,4 @@
-DATABASE_URL = "mysql+mysqlconnector://root:admin@localhost:3307/EcPedidos"
+DATABASE_URL = "mysql+mysqlconnector://root:admin@localhost:3307/microPedidos"
 
 RABBITMQ = {
     "username": "admin",

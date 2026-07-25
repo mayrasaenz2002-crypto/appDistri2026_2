@@ -7,7 +7,7 @@ La aplicación tiene dos puntos de entrada que se ejecutan como procesos indepen
 - `main_api.py`: API HTTP para administrar pedidos.
 - `main_worker.py`: worker que consume eventos de direcciones de clientes.
 
-Ambos procesos comparten los servicios, los modelos y la base de datos MySQL `EcPedidos`.
+Ambos procesos comparten los servicios, los modelos y la base de datos MySQL `MicroPedidos`.
 
 ## Diagrama de arquitectura
 
@@ -24,7 +24,7 @@ flowchart LR
         GenericService["GenericService"]
     end
 
-    DB[("MySQL<br/>EcPedidos")]
+    DB[("MySQL<br/>MicroPedidos")]
 
     subgraph Broker["RabbitMQ"]
         InputQueue["clienteDireccionEvent"]
@@ -148,7 +148,7 @@ sequenceDiagram
     participant MC as app.microCliente.api
     participant RMQ as RabbitMQ
     participant Worker as Worker
-    participant DB as MySQL EcPedidos
+    participant DB as MySQL MicroPedidos
     participant Client as Cliente HTTP
     participant API as FastAPI
     participant Service as PedidoService

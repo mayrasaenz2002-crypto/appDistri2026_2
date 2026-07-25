@@ -276,7 +276,7 @@ Configurar
 
 ```python
 DATABASE_URL =
-"mysql+mysqlconnector://root:admin@localhost:3307/BddMicroPedidos"
+"mysql+mysqlconnector://root:admin@localhost:3307/microPedidos"
 ```
 
 ## RabbitMQ
