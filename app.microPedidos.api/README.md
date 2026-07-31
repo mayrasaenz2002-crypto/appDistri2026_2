@@ -188,7 +188,8 @@ Content-Type: application/json
 
 ```json
 {
-  "email": "admin@gmail.com",
+  "email": "
+  ",
   "password": "admin"
 }
 ```

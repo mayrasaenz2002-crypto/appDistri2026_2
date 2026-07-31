@@ -1,0 +1,69 @@
+services:
+
+  service-sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: database-sql-clientes
+    restart: unless-stopped
+
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "adminAppDist2025#"
+
+    ports:
+      - "1434:1433"
+
+    volumes:
+      - sql_clientes_data:/var/opt/mssql
+
+    networks:
+      - net-app-distribuidas
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'adminAppDist2025#' -C -Q 'SELECT 1' || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+
+  microclientes-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: microclientes-api:1.0
+    container_name: microclientes-api
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: >
+        Server=service-sql,1433;
+        Database=MicroClientesDB;
+        User Id=sa;
+        Password=adminAppDist2025#;
+        TrustServerCertificate=True;
+
+    ports:
+      - "8081:8080"
+
+    depends_on:
+      service-sql:
+        condition: service_healthy
+
+    networks:
+      - net-app-distribuidas
+
+
+networks:
+  net-app-distribuidas:
+    driver: bridge
+
+
+volumes:
+  sql_clientes_data:

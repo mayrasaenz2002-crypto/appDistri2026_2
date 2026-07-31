@@ -1,4 +1,3 @@
-using app.microCliente.services.Implementations;
 using app.microCliente.common.EventMQ;
 using app.microCliente.dataAccess.context;
 using app.microCliente.dataAccess.repositories;
@@ -9,27 +8,30 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// =============================
+// Configuración de servicios
+// =============================
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// 🔥 IMPORTANTE: usar DefaultConnection (compatible con Docker)
+var conSqlServer = builder.Configuration.GetConnectionString("DefaultConnection")!;
 
-//LA CADENA DE CONEXION ESTA EN EL appsettings.json
-//CON EL SIGUIENTA LINEA OBTENEMOS LA CADENA DE CONEXION A SQL SERVER
-var conSqlServer = builder.Configuration.GetConnectionString("BDDSqlServer")!;
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(conSqlServer);
-    options.LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging();
+options.UseSqlServer(conSqlServer);
+options.LogTo(Console.WriteLine, LogLevel.Information)
+.EnableSensitiveDataLogging();
 });
 
-// Leer la configuraci�n de RabbitMQ desde el appsettings.json y lo setea en la clase RabbitMQSettings
-builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("rabbitmq"));
+// Configuración RabbitMQ
+builder.Services.Configure<RabbitMQSettings>(
+builder.Configuration.GetSection("rabbitmq")
+);
 
-//declarar servicio y repositorios
+// Repositorios y servicios
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 
@@ -40,17 +42,27 @@ builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// =============================
+// Configuración del pipeline
+// =============================
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
 app.MapControllers();
+
+// =============================
+// 🔥 MIGRACIONES AUTOMÁTICAS
+// =============================
+using (var scope = app.Services.CreateScope())
+{
+var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+dbContext.Database.Migrate();
+}
 
 app.Run();
