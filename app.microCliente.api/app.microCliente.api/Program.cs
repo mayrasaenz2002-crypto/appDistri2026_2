@@ -16,8 +16,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 🔥 IMPORTANTE: usar DefaultConnection (compatible con Docker)
-var conSqlServer = builder.Configuration.GetConnectionString("DefaultConnection")!;
+// Configuración SQL Server
+var conSqlServer = builder.Configuration.GetConnectionString("BDDSqlServer");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -45,13 +45,12 @@ var app = builder.Build();
 // =============================
 // Configuración del pipeline
 // =============================
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// ✅ CORRECTO (soporta Docker)
 if (!app.Environment.IsEnvironment("Docker"))
 {
     app.UseHttpsRedirection();
@@ -62,7 +61,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // =============================
-// 🔥 MIGRACIONES AUTOMÁTICAS
+// Migraciones automáticas
 // =============================
 using (var scope = app.Services.CreateScope())
 {
