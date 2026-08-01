@@ -21,14 +21,14 @@ var conSqlServer = builder.Configuration.GetConnectionString("DefaultConnection"
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-options.UseSqlServer(conSqlServer);
-options.LogTo(Console.WriteLine, LogLevel.Information)
-.EnableSensitiveDataLogging();
+    options.UseSqlServer(conSqlServer);
+    options.LogTo(Console.WriteLine, LogLevel.Information)
+           .EnableSensitiveDataLogging();
 });
 
 // Configuración RabbitMQ
 builder.Services.Configure<RabbitMQSettings>(
-builder.Configuration.GetSection("rabbitmq")
+    builder.Configuration.GetSection("rabbitmq")
 );
 
 // Repositorios y servicios
@@ -47,11 +47,16 @@ var app = builder.Build();
 // =============================
 if (app.Environment.IsDevelopment())
 {
-app.UseSwagger();
-app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// ✅ CORRECTO (soporta Docker)
+if (!app.Environment.IsEnvironment("Docker"))
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthorization();
 
 app.MapControllers();
@@ -61,8 +66,8 @@ app.MapControllers();
 // =============================
 using (var scope = app.Services.CreateScope())
 {
-var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-dbContext.Database.Migrate();
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
 }
 
 app.Run();

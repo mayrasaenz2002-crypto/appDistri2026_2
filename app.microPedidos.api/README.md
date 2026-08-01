@@ -56,13 +56,13 @@ app.microPedidos.api/
 - Python 3.10 o superior.
 - MySQL disponible en `localhost:3307`.
 - RabbitMQ disponible en `localhost:5672`.
-- Una base de datos MySQL llamada `EcPedidos`.
+- Una base de datos MySQL llamada `MicroPedidos`.
 - El microservicio `app.microCliente.api` para generar el evento de dirección de cliente.
 
 La configuración actual se encuentra en `app/core/config.py`:
 
 ```python
-DATABASE_URL = "mysql+mysqlconnector://root:admin@localhost:3307/EcPedidos"
+DATABASE_URL = "mysql+mysqlconnector://root:admin@localhost:3307/MicroPedidos"
 
 RABBITMQ = {
     "username": "admin",

@@ -1,0 +1,56 @@
+services:
+  microcliente-api:
+    build:
+      context: ../../app.microCliente.api
+      dockerfile: Dockerfile
+    image: ecommerce/microcliente-api:local
+    container_name: app-microcliente-api
+    restart: on-failure
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_HTTP_PORTS: "8081"
+    ports:
+      - "5180:8081"
+    networks:
+      - net-app-distri
+
+  micropedidos-api:
+    build:
+      context: ../../app.microPedidos.api
+      dockerfile: Dockerfile
+    image: ecommerce/micropedidos:local
+    container_name: app-micropedidos-api
+    restart: on-failure
+    environment:
+      APP_ENV: docker
+    command:
+      - uvicorn
+      - main_api:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8082"
+    ports:
+      - "8002:8082"
+    networks:
+      - net-app-distri
+
+  micropedidos-worker:
+    build:
+      context: ../../app.microPedidos.api
+      dockerfile: Dockerfile
+    image: ecommerce/micropedidos:local
+    container_name: app-micropedidos-worker
+    restart: on-failure
+    environment:
+      APP_ENV: docker
+    command:
+      - python
+      - main_worker.py
+    networks:
+      - net-app-distri
+
+networks:
+  net-app-distri:
+    external: true
+    name: netappdistri
