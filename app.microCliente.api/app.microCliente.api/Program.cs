@@ -8,16 +8,19 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// =============================
-// Configuración de servicios
-// =============================
+// Servicios MVC
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configuración SQL Server
+// Cadena de conexión SQL Server
 var conSqlServer = builder.Configuration.GetConnectionString("BDDSqlServer");
+
+if (string.IsNullOrEmpty(conSqlServer))
+{
+    throw new Exception("No se encontró la cadena de conexión BDDSqlServer");
+}
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -42,15 +45,14 @@ builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 
 var app = builder.Build();
 
-// =============================
-// Configuración del pipeline
-// =============================
+// Swagger solamente en desarrollo
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// HTTPS solo fuera de Docker
 if (!app.Environment.IsEnvironment("Docker"))
 {
     app.UseHttpsRedirection();
@@ -60,13 +62,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// =============================
-// Migraciones automáticas
-// =============================
+// Ejecutar migraciones automáticamente
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.Migrate();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
 }
 
 app.Run();
